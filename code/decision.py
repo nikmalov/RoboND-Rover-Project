@@ -15,13 +15,13 @@ def decision_step(Rover):
         print("**********************")
         # Check for Rover.mode status
         if Rover.mode == 'forward': 
-            #Check if there is a visible sample ahead
+            # Check if there is a visible sample ahead
             print("Decision: Sample is here " + np.mean(Rover.rock_angles * 180/np.pi).__str__())
             if Rover.rock_angles.any():
                 print("Decision: Sample found, distance = " + Rover.rock_dists[0].__str__())
                 if Rover.rock_dists[0] > 10:
                     angle = np.mean(Rover.rock_angles * 180/np.pi)
-                    #adjust direction
+                    # adjust direction
                     if np.absolute(angle) > 5 and Rover.vel > 0.5:
                         print("Decision: Sample found, breaking")
                         Rover.brake = Rover.brake_set / 2
@@ -78,16 +78,13 @@ def decision_step(Rover):
                     Rover.steer = -15 # Could be more clever here about which way to turn
                 # If we're stopped but see sufficient navigable terrain in front then go!
                 if len(Rover.nav_angles) >= Rover.go_forward:
-                    # Set throttle back to stored value
-					Rover.throttle = Rover.throttle_set
-                    # Release the brake
+                    Rover.throttle = Rover.throttle_set
                     Rover.brake = 0
-                    # Set steer to mean angle
                     Rover.steer = np.clip(np.mean(Rover.nav_angles * 180/np.pi), -15, 15)
                     Rover.mode = 'forward'
     # Just to make the rover do something 
     # even if no modifications have been made to the code
-    #else:
+    # else:
     #    Rover.throttle = Rover.throttle_set
     #    Rover.steer = 0
     #    Rover.brake = 0
