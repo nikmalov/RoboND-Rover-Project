@@ -16,11 +16,11 @@ def decision_step(Rover):
         # Check for Rover.mode status
         if Rover.mode == 'forward': 
             # Check if there is a visible sample ahead
-            print("Decision: Sample is here " + np.mean(Rover.rock_angles * 180/np.pi).__str__())
+            print("Decision: Sample is here " + navigable_angle(Rover.rock_angles).__str__())
             if Rover.rock_angles.any():
                 print("Decision: Sample found, distance = " + Rover.rock_dists[0].__str__())
                 if Rover.rock_dists[0] > 10:
-                    angle = np.mean(Rover.rock_angles * 180/np.pi)
+                    angle = clipped_navigable_angle(Rover.rock_angles)
                     # adjust direction
                     if np.absolute(angle) > 5 and Rover.vel > 0.5:
                         print("Decision: Sample found, breaking")
@@ -34,7 +34,7 @@ def decision_step(Rover):
                         print("Decision: Sample found, approaching")
                         Rover.brake = 0
                         Rover.throttle = 0.2
-                    Rover.steer = np.clip(angle, -15, 15)
+                    Rover.steer = angle
                 else:
                     Rover.throttle = 0
                     Rover.brake = Rover.brake_set
@@ -49,8 +49,7 @@ def decision_step(Rover):
                     Rover.throttle = 0
                 Rover.brake = 0
                 # Set steering to average angle clipped to the range +/- 15
-                angle = np.mean(Rover.nav_angles * 180/np.pi)
-                Rover.steer = np.clip(angle, -15, 15)
+                Rover.steer = clipped_navigable_angle(Rover.nav_angles)
             # If there's a lack of navigable terrain pixels then go to 'stop' mode
             elif len(Rover.nav_angles) < Rover.stop_forward:
                     # Set mode to "stop" and hit the brakes!
@@ -80,7 +79,7 @@ def decision_step(Rover):
                 if len(Rover.nav_angles) >= Rover.go_forward:
                     Rover.throttle = Rover.throttle_set
                     Rover.brake = 0
-                    Rover.steer = np.clip(np.mean(Rover.nav_angles * 180/np.pi), -15, 15)
+                    Rover.steer = clipped_navigable_angle(Rover.nav_angles)
                     Rover.mode = 'forward'
     # Just to make the rover do something 
     # even if no modifications have been made to the code
@@ -94,3 +93,11 @@ def decision_step(Rover):
         Rover.send_pickup = True
     
     return Rover
+
+
+def navigable_angle(angles):
+    return np.mean(angles * 180/np.pi)
+
+
+def clipped_navigable_angle(angles):
+    return np.clip(navigable_angle(angles), -15, 15)
