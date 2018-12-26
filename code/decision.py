@@ -26,9 +26,9 @@ def decision_step(Rover):
                         print("Decision: Sample found, breaking")
                         Rover.brake = Rover.brake_set / 2
                         Rover.throttle = 0
-                    elif Rover.vel > 0.5:
-                        print("Decision: Sample found, breaking")
-                        Rover.brake = Rover.brake_set / 2
+                    elif Rover.vel > 0.3:
+                        print("Decision: Sample found, slowing down")
+                        Rover.throttle = 0
                     else:
                         # and move towards the sample
                         print("Decision: Sample found, approaching")
