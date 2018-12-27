@@ -87,7 +87,7 @@ def pix_to_world(xpix, ypix, xpos, ypos, yaw, world_size, scale):
 # Define a function to perform a perspective transform
 def perspect_transform(img, src, dst):
     M = cv2.getPerspectiveTransform(src, dst)
-    warped = cv2.warpPerspective(img, M, (img.shape[1], img.shape[0]))# keep same size as input image
+    warped = cv2.warpPerspective(img, M, (img.shape[1], img.shape[0]))  # keep same size as input image
     return warped
 
 # Crops path data to only the most trusted visible part
@@ -129,16 +129,16 @@ def perception_step(Rover):
     threshedGold = color_thresh_gold(warped)
     threshedObstacle = crop_obstacle_data(color_thresh_dark(warped))
     # 4) Update Rover.vision_image (this will be displayed on left side of screen)
-    #Rover.vision_image[:,:,0] = threshedObstacle
-    #Rover.vision_image[:,:,1] = threshedGold
-    #Rover.vision_image[:,:,2] = threshedPath
+    # Rover.vision_image[:,:,0] = threshedObstacle
+    # Rover.vision_image[:,:,1] = threshedGold
+    # Rover.vision_image[:,:,2] = threshedPath
     Rover.vision_image = warped
     # 5) Convert map image pixel values to rover-centric coords
     xObstacle, yObstacle = rover_coords(threshedObstacle)
     xGold, yGold = rover_coords(threshedGold)
-    #we use full picture to make a further decision
+    # we use full picture to make a further decision
     xCoord, yCoord = rover_coords(threshedPath)
-    #but use cropped picture to map surroundings
+    # but use cropped picture to map surroundings
     xMap, yMap = rover_coords(crop_path_data(threshedPath))
     # 6) Convert rover-centric pixel values to world coordinates
     side = Rover.worldmap.shape[0]
@@ -152,11 +152,15 @@ def perception_step(Rover):
     # 8) Convert rover-centric pixel positions to polar coordinates
     dist, angle = to_polar_coords(xCoord, yCoord)
     rockDist, rockAngle = to_polar_coords(xGold, yGold)
+    obstaclesDist, obstaclesAngle = to_polar_coords(xObstacle, yObstacle)
     # Update Rover pixel distances and angles
     Rover.nav_dists = dist
     Rover.nav_angles = angle
-    #point to visible sample if such exists
+    # point to visible sample if such exists
     Rover.rock_dists = rockDist
     Rover.rock_angles = rockAngle
+    # point to visible obstacles ahead
+    Rover.obstacle_dists = obstaclesDist
+    Rover.obstacle_angles = obstaclesAngle
     print("Updated: Sample is here " + rockAngle.__str__())
     return Rover
