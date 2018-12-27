@@ -125,6 +125,8 @@ Decision where to move is made based on input from 3 variables:
     and should rotate in order to avoid collision. Used as additional safety since the mean value of navigable terrain angles
     can lead rover directly to an obstacle with plenty of visible navigable terrain on both sides of it.
 
+## [Video Submission](https://youtu.be/cyK75L4EIwE)
+
 Fields of improvement:
 
 * "Rotation direction"
